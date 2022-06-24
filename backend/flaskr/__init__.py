@@ -4,7 +4,6 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS, cross_origin
 import random
 import json
-
 from models import setup_db, Question, Category
 
 QUESTIONS_PER_PAGE = 10
@@ -52,10 +51,10 @@ def create_app(test_config=None):
     # Endpoint to add a new category
     @app.route("/categories", methods=["POST"])
     def add_category():
-        category_type = request.get_json()["type"]
-        category = Category(type=category_type)
-
         try:
+            category_type = request.get_json()["type"]
+            category = Category(type=category_type)
+
             category.insert()
 
             return jsonify({
@@ -85,7 +84,7 @@ def create_app(test_config=None):
             })
 
         except Exception:
-            abort(400)
+            abort(404)
 
     @app.route('/questions/<int:question_id>', methods=['DELETE'])
     def delete_question(question_id):
@@ -161,7 +160,7 @@ def create_app(test_config=None):
             })
 
         except Exception:
-            abort(400)
+            abort(422)
 
     @app.route("/quizzes", methods=["POST"])
     def get_questions_for_quiz():
@@ -176,7 +175,7 @@ def create_app(test_config=None):
 
         if quiz_category:
             questions = Question.query.filter_by(
-                category=quiz_category).\
+                category=quiz_category). \
                 filter(Question.id.notin_(previous_questions)).all()
 
         else:
