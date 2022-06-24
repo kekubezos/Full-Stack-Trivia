@@ -15,15 +15,15 @@ class TriviaTestCase(unittest.TestCase):
         self.app = create_app()
         self.client = self.app.test_client
         self.database_name = "trivia_test"
-        self.database_path = "postgresql://{}:{}@{}/{}".format('postgres','69','localhost:5432', self.database_name)
+        self.database_path = "postgresql://{}:{}@{}/{}".format('postgres', '69', 'localhost:5432', self.database_name)
         setup_db(self.app, self.database_path)
 
         self.new_question = {
-                "question": "Who was the first man on the moon?",
-                "category": 1,
-                "answer": "Niel Armstrong",
-                "difficulty": 1
-            }
+            "question": "Who was the first man on the moon?",
+            "category": 1,
+            "answer": "Niel Armstrong",
+            "difficulty": 1
+        }
 
         # binds the app to the current context
         with self.app.app_context():
@@ -141,6 +141,14 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(res.status_code, 200)
         self.assertFalse(len(data["questions"]))
         self.assertFalse(data["totalQuestions"])
+
+    def test_get_questions_in_category_success(self):
+        res = self.client().get("/categories/2/questions")
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 200)
+        self.assertTrue(len(data["questions"]))
+        self.assertTrue(data["totalQuestions"])
 
     def test_get_question_for_quiz_success(self):
         res = self.client().post("/quizzes", json={
